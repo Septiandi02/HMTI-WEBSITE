@@ -1,0 +1,2 @@
+# Blokir semua akses langsung ke folder includes/ (hanya dipakai via require/include)
+Require all denied

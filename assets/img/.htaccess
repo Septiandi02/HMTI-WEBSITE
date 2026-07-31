@@ -1,0 +1,9 @@
+# Matikan eksekusi PHP & script lain di semua folder upload gambar
+
+# Supaya file gambar yang terlanjur terupload tidak bisa dijalankan sebagai script.
+
+<FilesMatch "\.(php|phtml|php3|php4|php5|php7|phar|pl|py|cgi|asp|aspx|jsp|sh|exe|bat|html?)$">
+Require all denied
+</FilesMatch>
+Options -Indexes
+Options -ExecCGI

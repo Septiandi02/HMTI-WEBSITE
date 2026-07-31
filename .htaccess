@@ -1,0 +1,64 @@
+# ============================================================
+# .htaccess - HMTI (keamanan + rewrite)
+# ============================================================
+
+# -----------------------------------------------------------
+# KEAMANAN
+# -----------------------------------------------------------
+
+# Matikan tampilan daftar isi folder (directory listing)
+Options -Indexes
+
+# -----------------------------------------------------------
+# HALAMAN 404 KUSTOM
+#   Localhost (XAMPP): /himti/404.php
+#   Domain (live):     /404.php   ← sesuaikan saat deploy ke domain
+# -----------------------------------------------------------
+ErrorDocument 404 /himti/404.php
+
+# Blokir akses langsung ke folder internal yang sensitif.
+# Pola mengakomodasi localhost (/himti/...) maupun domain (/...).
+RedirectMatch 403 ^(?:/himti)?/(config|database|logs)(/|$)
+RedirectMatch 403 ^(?:/himti)?/(?:[^/]+/)*includes(/|$)
+
+# Blokir akses langsung ke file yang tidak boleh dibuka via browser
+<FilesMatch "\.(sql|log|ini|sh|bat|bak|md|lock|env|gitignore)$">
+    Require all denied
+</FilesMatch>
+
+# Security Headers (lapisan kedua; yang utama sudah di-set lewat PHP)
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+    Header always set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# -----------------------------------------------------------
+# REWRITE
+# -----------------------------------------------------------
+RewriteEngine On
+
+# -----------------------------------------------------------
+# LOCALHOST (XAMPP)  → RewriteBase /himti/
+# DOMAIN (live)      → RewriteBase /
+# -----------------------------------------------------------
+# Ganti baris di bawah sesuai lingkungan:
+#   - Localhost: RewriteBase /himti/
+#   - Domain:    RewriteBase /
+RewriteBase /
+
+# JANGAN pernah eksekusi script di folder upload gambar
+RewriteRule ^assets/img/.*\.(php|phtml|php3|php4|php5|php7|phar|pl|py|cgi|asp|aspx|jsp|sh|exe|bat)$ - [F,L]
+
+# Kalau file/folder beneran ada, pakai langsung. Jangan rewrite.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Akses via /login atau /login.php diarahkan ke auth/login.php
+# (tanpa mengubah URL yang terlihat di browser)
+RewriteRule ^login(\.php)?/?$ auth/login.php [L,NC]
+
+# (opsional, tambahkan aturan serupa di sini kalau nanti mau
+#  menyembunyikan path folder lain juga)

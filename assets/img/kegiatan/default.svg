@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="225" viewBox="0 0 400 225">
+  <rect width="400" height="225" fill="#eef1f4"/>
+  <g transform="translate(200,112)">
+    <circle cx="0" cy="0" r="40" fill="#d5d9dd"/>
+    <path d="M-30 20 Q-30 -10 0 -10 Q30 -10 30 20" fill="#d5d9dd"/>
+    <rect x="-35" y="25" width="70" height="30" rx="6" fill="#d5d9dd"/>
+  </g>
+  <text x="200" y="170" text-anchor="middle" font-family="Montserrat,sans-serif" font-size="14" fill="#9aa0a8">HMTI</text>
+</svg>

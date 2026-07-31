@@ -1,0 +1,34 @@
+# ============================================
+# GITIGNORE project HMTI
+# ============================================
+
+# Log & file runtime (folder log dilindungi .htaccess, isinya TIDAK di-commit)
+logs/*
+!logs/.htaccess
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+ehthumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+nbproject/
+netbeans/
+
+# Environment & secrets (kalau nanti dipakai)
+.env
+.env.*
+*.local
+
+# Backup / temp
+*.bak
+*.tmp
+*~

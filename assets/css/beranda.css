@@ -1,0 +1,234 @@
+/* ==========================================
+   BERANDA.CSS
+   ========================================== */
+
+/* ---------- HERO SECTION ---------- */
+.hero {
+  position: relative;
+  min-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-image: url("../img/beranda/hero-kepengurusan.jpg");
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+/* Overlay gelap di atas foto - sesuai instruksi "menambahkan opacity pada foto" */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--hero-overlay);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  color: #fff;
+  padding: 20px;
+  max-width: 700px;
+}
+
+.hero-content .badge {
+  display: inline-block;
+  background-color: var(--hmti-light);
+  color: var(--hmti-dark);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  padding: 6px 22px;
+  border-radius: 30px;
+  letter-spacing: 2px;
+  margin-bottom: 18px;
+  font-size: 0.9rem;
+}
+
+.hero-content h1 {
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 700;
+  margin-bottom: 14px;
+  line-height: 1.3;
+}
+
+.hero-content p {
+  font-size: 1rem;
+  color: #e5e9ec;
+  margin-bottom: 28px;
+}
+
+.btn-hero {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #fff;
+  color: var(--hmti-dark);
+  font-weight: 600;
+  padding: 14px 28px;
+  border-radius: 8px;
+  transition:
+    transform 0.25s ease,
+    background-color 0.25s ease;
+}
+
+.btn-hero:hover {
+  background-color: var(--hmti-light);
+  transform: translateY(-3px);
+}
+
+/* Tombol aksi di hero: baris (primary + outline) */
+.hero-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.btn-hero-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  padding: 14px 28px;
+  border-radius: 8px;
+  color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.65);
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.btn-hero-outline:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: #fff;
+  transform: translateY(-3px);
+}
+
+/* ---------- SECTION KHUSUS BERANDA ---------- */
+/* .section, .section-heading sekarang ada di global.css (dipakai semua halaman) */
+
+/* ---------- KEGIATAN TERBARU (khusus preview di Beranda) ---------- */
+/* .kegiatan-grid, .kegiatan-card, .empty-state sekarang ada di global.css */
+
+/* ---------- DEPARTEMEN PREVIEW ---------- */
+.departemen-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+}
+
+.departemen-card {
+  background: var(--hmti-dark);
+  color: var(--footer-text);
+  text-align: center;
+  padding: 30px 16px;
+  border-radius: 14px;
+  transition:
+    transform 0.3s ease,
+    background-color 0.3s ease;
+}
+
+.departemen-card:hover {
+  background-color: var(--hmti-light);
+  color: var(--hmti-dark);
+  transform: translateY(-6px);
+}
+
+.departemen-card i {
+  font-size: 1.8rem;
+  margin-bottom: 12px;
+  transition: transform 0.3s ease;
+}
+
+.departemen-card h4 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* ==========================================
+   HERO: animasi masuk + scroll indicator
+   ========================================== */
+
+/* Catatan: efek ken-burns (zoom background) DIHAPUS karena memaksa
+   browser menggambar ulang hero full-screen tiap frame → terlihat
+   bergetar/shimmer (terutama pada teks di atasnya). */
+
+/* Konten hero muncul satu per satu (stagger) */
+.hero-content > * {
+  opacity: 0;
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+.hero-content > *:nth-child(1) {
+  animation-delay: 0.15s;
+}
+.hero-content > *:nth-child(2) {
+  animation-delay: 0.3s;
+}
+.hero-content > *:nth-child(3) {
+  animation-delay: 0.45s;
+}
+.hero-content > *:nth-child(4) {
+  animation-delay: 0.6s;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(26px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Indikator "gulir ke bawah" */
+.scroll-indicator {
+  position: absolute;
+  left: 50%;
+  bottom: 26px;
+  transform: translateX(-50%);
+  z-index: 3;
+  color: #fff;
+  font-size: 1.1rem;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  animation: bounceDown 2s infinite;
+  transition: background-color 0.25s ease;
+}
+
+.scroll-indicator:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+@keyframes bounceDown {
+  0%,
+  100% {
+    transform: translate(-50%, 0);
+  }
+  50% {
+    transform: translate(-50%, 10px);
+  }
+}
+
+/* Saat user mematikan animasi */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-indicator,
+  .wave-hand {
+    animation: none;
+  }
+
+  .hero-content > * {
+    opacity: 1;
+    animation: none;
+  }
+}

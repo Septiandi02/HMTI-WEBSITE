@@ -1,0 +1,3 @@
+# Blokir semua akses ke folder log (isi log tidak boleh dibaca via browser)
+Require all denied
+Options -Indexes
