@@ -14,7 +14,10 @@ if (isset($_GET['status'])):
     $msg = '';
     $tipe = 'success';
     switch ($_GET['status']) {
-        case 'tambah_sukses': $msg = 'Foto berhasil ditambahkan.'; break;
+        case 'tambah_sukses':
+            $n = isset($_GET['n']) ? (int)$_GET['n'] : 0;
+            $msg = $n > 1 ? $n . ' foto berhasil ditambahkan.' : 'Foto berhasil ditambahkan.';
+            break;
         case 'hapus_sukses':  $msg = 'Foto berhasil dihapus.'; break;
         case 'error':         $msg = 'Terjadi kesalahan.'; $tipe = 'error'; break;
     }

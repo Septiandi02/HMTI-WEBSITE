@@ -34,6 +34,17 @@ function kompres_gambar($source, $destination, $max_width = 1920, $quality = 80)
     list($width, $height) = $info;
     $mime = $info['mime'];
 
+    // ------------------------------------------------------------
+    // FAST PATH: kalau file sudah kecil dan dimensinya sudah pas,
+    // tidak perlu di-re-encode ulang. Ini menghemat banyak CPU di
+    // shared hosting (cPanel). Aman karena MIME sudah divalidasi
+    // lewat getimagesize dan folder upload sudah diblokir eksekusi
+    // script lewat .htaccess.
+    // ------------------------------------------------------------
+    if (($max_width === 0 || $width <= $max_width) && filesize($source) <= 400 * 1024) {
+        return move_uploaded_file($source, $destination);
+    }
+
     // Buat resource dari file asli
     switch ($mime) {
         case 'image/jpeg':
@@ -46,7 +57,8 @@ function kompres_gambar($source, $destination, $max_width = 1920, $quality = 80)
             // PNG: pertahankan alpha channel
             break;
         case 'image/webp':
-            $src_img = @imagecreatefromwebp($source);
+            // WebP tidak selalu tersedia di semua hosting; amankan dengan cek
+            $src_img = function_exists('imagecreatefromwebp') ? @imagecreatefromwebp($source) : false;
             $ext = 'webp';
             break;
         default:
@@ -54,6 +66,26 @@ function kompres_gambar($source, $destination, $max_width = 1920, $quality = 80)
     }
 
     if (!$src_img) return false;
+
+    // Perbaiki orientasi EXIF (foto dari HP sering terrotasi)
+    // Biasanya sudah dibereskan di browser, tapi ini menjaga kalau
+    // admin upload lewat browser lama / file asli dari kamera.
+    if ($mime === 'image/jpeg' && function_exists('exif_read_data') && function_exists('imageflip')) {
+        $exif = @exif_read_data($source);
+        if (!empty($exif['Orientation'])) {
+            switch ((int)$exif['Orientation']) {
+                case 2:  imageflip($src_img, IMG_FLIP_HORIZONTAL); break;
+                case 3:  $src_img = imagerotate($src_img, 180, 0); break;
+                case 4:  imageflip($src_img, IMG_FLIP_VERTICAL); break;
+                case 5:  $src_img = imagerotate($src_img, 90, 0);
+                         imageflip($src_img, IMG_FLIP_HORIZONTAL); break;
+                case 6:  $src_img = imagerotate($src_img, -90, 0); break;
+                case 7:  $src_img = imagerotate($src_img, 90, 0);
+                         imageflip($src_img, IMG_FLIP_VERTICAL); break;
+                case 8:  $src_img = imagerotate($src_img, 90, 0); break;
+            }
+        }
+    }
 
     // Hitung dimensi baru (resize proporsional)
     $new_width = $width;
@@ -88,7 +120,7 @@ function kompres_gambar($source, $destination, $max_width = 1920, $quality = 80)
             $result = imagepng($dst_img, $destination, 6);
             break;
         case 'image/webp':
-            $result = imagewebp($dst_img, $destination, $quality);
+            $result = function_exists('imagewebp') && imagewebp($dst_img, $destination, $quality);
             break;
     }
 

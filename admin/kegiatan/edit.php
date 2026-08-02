@@ -71,6 +71,24 @@ tinymce.init({
     plugins: 'lists link image preview code',
     toolbar: 'undo redo | bold italic underline | bullist numlist | link image | code',
     branding: false,
+    automatic_uploads: true,
+    paste_data_images: true,
+    relative_urls: false,
+    remove_script_host: false,
+    convert_urls: false,
+    images_upload_handler: function (blobInfo, success, failure) {
+        var fd = new FormData();
+        fd.append('file', blobInfo.blob(), blobInfo.filename());
+        var tokenEl = document.querySelector('input[name="csrf_token"]');
+        if (tokenEl) fd.append('csrf_token', tokenEl.value);
+        fetch('upload_editor.php', { method: 'POST', body: fd, credentials: 'same-origin' })
+            .then(function (r) { return r.json().catch(function () { return null; }); })
+            .then(function (data) {
+                if (data && data.location) success(data.location);
+                else failure('Gagal upload gambar' + (data && data.error ? ': ' + data.error : ''));
+            })
+            .catch(function () { failure('Gagal upload gambar'); });
+    },
     setup: function (editor) {
         editor.on('change', function () {
             editor.save();

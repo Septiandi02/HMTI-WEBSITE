@@ -55,7 +55,7 @@ function security_init(): void {
             "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; " .
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; " .
             "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com; " .
-            "img-src 'self' data:; " .
+            "img-src 'self' data: blob:; " .
             "connect-src 'self'; " .
             "frame-src 'self' https://www.google.com https://maps.google.com; " .
             "frame-ancestors 'self'; " .

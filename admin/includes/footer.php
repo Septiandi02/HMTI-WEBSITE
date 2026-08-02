@@ -4,5 +4,6 @@
 
 <script src="<?= BASE_URL ?>/assets/js/admin.js?v=<?= (int)@filemtime(__DIR__ . '/../../assets/js/admin.js') ?>"></script>
 <script src="<?= BASE_URL ?>/assets/js/main.js?v=<?= (int)@filemtime(__DIR__ . '/../../assets/js/main.js') ?>"></script>
+<script src="<?= BASE_URL ?>/assets/js/upload-compress.js?v=<?= (int)@filemtime(__DIR__ . '/../../assets/js/upload-compress.js') ?>"></script>
 </body>
 </html>
