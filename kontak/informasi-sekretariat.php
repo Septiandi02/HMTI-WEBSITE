@@ -28,7 +28,7 @@ include '../includes/header.php';
         <div class="kontak-info-card">
             <i class="fa-brands fa-whatsapp"></i>
             <h3>WhatsApp Admin</h3>
-            <p><a href="https://wa.me/6280000000000" target="_blank">+62 800-0000-0000</a></p>
+            <p><a href="https://wa.me/+6283827599803" target="_blank">+62 838-2759-9803</a></p>
         </div>
 
     </div>

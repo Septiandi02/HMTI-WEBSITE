@@ -20,6 +20,16 @@ if ($id <= 0 || $id === (int)$_SESSION['user_id']) {
     exit;
 }
 
+// Cegah menghapus super admin TERAKHIR (kalau cuma tinggal satu, jangan dihapus)
+$target = db_fetch_one("SELECT role FROM users WHERE id = ?", [$id]);
+if ($target && $target['role'] === 'super_admin') {
+    $jumlah_sa = db_fetch_one("SELECT COUNT(*) AS total FROM users WHERE role = 'super_admin'");
+    if ($jumlah_sa && (int)$jumlah_sa['total'] <= 1) {
+        header('Location: index.php?status=error');
+        exit;
+    }
+}
+
 $ok = db_query("DELETE FROM users WHERE id = ?", [$id]);
 $result = $ok ? 'hapus_sukses' : 'error';
 

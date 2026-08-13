@@ -25,6 +25,20 @@ endif;
     <p>Perbarui data admin</p>
 </div>
 
+<?php if (isset($_GET['status']) && $_GET['status'] === 'error_role'): ?>
+    <div class="admin-alert admin-alert-error">
+        <i class="fa-solid fa-shield-halved"></i> Role super admin tidak bisa diturunkan / dihapus untuk akun super admin terakhir.
+    </div>
+<?php elseif (isset($_GET['status']) && $_GET['status'] === 'error_password'): ?>
+    <div class="admin-alert admin-alert-error">
+        <i class="fa-solid fa-circle-exclamation"></i> Password harus minimal 8 karakter, mengandung huruf & angka, dan tidak sama dengan username.
+    </div>
+<?php elseif (isset($_GET['status']) && $_GET['status'] === 'error'): ?>
+    <div class="admin-alert admin-alert-error">
+        <i class="fa-solid fa-circle-exclamation"></i> Gagal menyimpan. Periksa kembali data yang diisi.
+    </div>
+<?php endif; ?>
+
 <form action="proses_edit.php" method="POST" class="admin-form">
     <?= csrf_field() ?>
     <input type="hidden" name="id" value="<?= $user['id'] ?>">
@@ -42,12 +56,12 @@ endif;
     <div class="form-group">
         <label for="password">Password Baru</label>
         <div class="password-wrapper">
-            <input type="password" name="password" id="password" placeholder="Kosongkan jika tidak ingin mengubah password" minlength="6">
+            <input type="password" name="password" id="password" placeholder="Kosongkan jika tidak ingin mengubah password" minlength="8">
             <button type="button" class="toggle-password" id="togglePassword" aria-label="Tampilkan password">
                 <i class="fa-solid fa-eye"></i>
             </button>
         </div>
-        <small style="color:#8a8f98;">Minimal 6 karakter. Biarkan kosong jika tidak ingin mengganti password.</small>
+        <small style="color:#8a8f98;">Minimal 8 karakter, harus ada huruf & angka. Kosongkan jika tidak ingin mengganti password.</small>
     </div>
 
     <div class="form-group">

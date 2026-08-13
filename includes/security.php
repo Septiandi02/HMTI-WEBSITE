@@ -31,6 +31,9 @@ function security_init(): void {
             'samesite' => 'Lax',             // anti CSRF tambahan
         ]);
         session_name('HMTISESSID');
+        // Tolak session ID asing yang tidak dibuat sendiri oleh server
+        // (lapisan tambahan anti session fixation)
+        ini_set('session.use_strict_mode', '1');
         session_start();
     }
 
@@ -49,6 +52,7 @@ function security_init(): void {
     if (!headers_sent()) {
         header('X-Frame-Options: SAMEORIGIN');
         header('X-Content-Type-Options: nosniff');
+        header('X-XSS-Protection: 1; mode=block');
         header('Referrer-Policy: strict-origin-when-cross-origin');
         header('Permissions-Policy: geolocation=(), microphone=(), camera=()');
         header("Content-Security-Policy: default-src 'self'; " .
@@ -214,10 +218,38 @@ function login_terkunci(string $username): bool {
     return (int)$cnt >= 5;
 }
 
+/**
+ * true = IP ini sudah terkunci GLOBAL (maks 20 percobaan gagal dalam 15 menit,
+ * berapa pun username yang dicoba).
+ *
+ * Ini menutup celah brute-force yang menyebar ke BANYAK username dari satu IP
+ * (biasa dipakai bot/proxy), yang tidak tertangkap oleh limit per-username+IP.
+ */
+function login_ip_terkunci(): bool {
+    _pastikan_tabel_login_attempts();
+    $db = _security_db();
+    $ip = $_SERVER['REMOTE_ADDR'] ?? '';
+    $stmt = mysqli_prepare($db,
+        "SELECT COUNT(*) FROM login_attempts
+         WHERE ip = ? AND sukses = 0
+           AND attempted_at > (NOW() - INTERVAL 15 MINUTE)");
+    if (!$stmt) {
+        return false;
+    }
+    mysqli_stmt_bind_param($stmt, 's', $ip);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_bind_result($stmt, $cnt);
+    mysqli_stmt_fetch($stmt);
+    mysqli_stmt_close($stmt);
+    return (int)$cnt >= 20;
+}
+
 function login_gagal(string $username): void {
     _pastikan_tabel_login_attempts();
     $db = _security_db();
     $ip = $_SERVER['REMOTE_ADDR'] ?? '';
+    // Catat percobaan gagal ke log untuk pemantauan (TANPA password, hanya user+IP+waktu)
+    log_error('LOGIN GAGAL | user: ' . $username . ' | ip: ' . $ip . ' | waktu: ' . date('Y-m-d H:i:s'));
     $stmt = mysqli_prepare($db,
         "INSERT INTO login_attempts (username, ip, sukses, attempted_at) VALUES (?, ?, 0, NOW())");
     if ($stmt) {
@@ -239,4 +271,28 @@ function login_berhasil(string $username): void {
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
     }
+}
+
+// ------------------------------------------------------------
+// 6) KEBIJAKAN PASSWORD
+// ------------------------------------------------------------
+
+/**
+ * Cek kekuatan password baru.
+ * - Minimal 8 karakter
+ * - Tidak boleh sama dengan username
+ * - Harus mengandung minimal satu huruf DAN satu angka
+ *   (supaya tidak gampang ditebak / di-brute-force)
+ */
+function password_kuat(string $password, string $username = ''): bool {
+    if (strlen($password) < 8) {
+        return false;
+    }
+    if ($username !== '' && strcasecmp($password, $username) === 0) {
+        return false;
+    }
+    if (!preg_match('/[A-Za-z]/', $password) || !preg_match('/[0-9]/', $password)) {
+        return false;
+    }
+    return true;
 }

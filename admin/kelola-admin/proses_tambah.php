@@ -17,8 +17,20 @@ $username = trim($_POST['username'] ?? '');
 $password = $_POST['password'] ?? '';
 $role     = $_POST['role'] ?? 'admin';
 
-if ($nama === '' || $username === '' || $password === '' || strlen($password) < 6) {
+// Batasi panjang username (anti input raksasa)
+if (strlen($username) > 100) {
     header('Location: tambah.php?status=error');
+    exit;
+}
+
+if ($nama === '' || $username === '' || $password === '') {
+    header('Location: tambah.php?status=error');
+    exit;
+}
+
+// Password wajib memenuhi kebijakan kuat (min 8, huruf + angka, beda dari username)
+if (!password_kuat($password, $username)) {
+    header('Location: tambah.php?status=error_password');
     exit;
 }
 

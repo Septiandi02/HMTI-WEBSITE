@@ -18,12 +18,26 @@ if (!csrf_verify()) {
 $username = trim($_POST['username'] ?? '');
 $password = $_POST['password'] ?? '';
 
+// Batasi panjang username (mencegah input raksasa / spam ke tabel login_attempts)
+if (strlen($username) > 100) {
+    header('Location: login.php?status=error');
+    exit;
+}
+
 if ($username === '' || $password === '') {
     header('Location: login.php?status=error');
     exit;
 }
 
-// Proteksi brute-force: kalau sudah 5x gagal dalam 15 menit, blokir
+// Proteksi brute-force LAPIS 2: IP yang terlalu sering gagal (berapa pun
+// username-nya) ikut diblokir sementara. Menutup celah serangan yang
+// menyebar ke banyak username dari satu IP.
+if (login_ip_terkunci()) {
+    header('Location: login.php?status=locked');
+    exit;
+}
+
+// Proteksi brute-force LAPIS 1: kalau sudah 5x gagal dalam 15 menit per user+IP, blokir
 if (login_terkunci($username)) {
     header('Location: login.php?status=locked');
     exit;

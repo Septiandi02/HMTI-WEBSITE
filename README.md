@@ -40,8 +40,10 @@ Website resmi **Himpunan Mahasiswa Teknologi Informasi**, Universitas Bangka Bel
 - **SQL Injection** → semua query memakai **prepared statements** (`includes/db.php`)
 - **XSS** → output di-escape (`e()`), konten HTML "kaya" disanitasi (`bersihkan_html()`)
 - **CSRF** → token di semua form POST (termasuk tombol hapus)
-- **Session** → cookie HttpOnly + SameSite, regenerate ID, timeout 30 menit
-- **Brute-force** → terkunci setelah 5× gagal dalam 15 menit
+- **Session** → cookie HttpOnly + SameSite + strict mode, regenerate ID, timeout 30 menit
+- **Brute-force** → terkunci setelah 5× gagal dalam 15 menit per user+IP, **plus limit global per IP** (20× gagal) dan semua percobaan gagal tercatat di `logs/`
+- **Password** → wajib kuat (min 8 karakter, huruf + angka, berbeda dari username)
+- **Super Admin** → tidak bisa menurunkan/menghapus akun super admin terakhir (anti lockout)
 - **Upload** → verifikasi MIME + re-kompresi, eksekusi script diblokir di folder upload
 - **Security headers** (CSP, X-Frame-Options, nosniff, dll) + proteksi folder internal lewat `.htaccess`
 - Error detail tidak bocor ke user (di-log ke `logs/`)
