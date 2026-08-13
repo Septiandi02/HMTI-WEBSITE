@@ -1,5 +1,4 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/tiubbac/public_html/himti.ti.ubb.ac.id/
-    - /bin/cp -R * $DEPLOYPATH
+    - /bin/cp -R * /home/tiubbac/public_html/himti.ti.ubb.ac.id/
