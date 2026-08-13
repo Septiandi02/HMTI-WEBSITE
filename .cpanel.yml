@@ -1,4 +1,4 @@
 ---
 deployment:
   tasks:
-    - /bin/cp -R * /home/tiubbac/public_html/himti.ti.ubb.ac.id
+    - /bin/cp -R * /public_html/himti.ti.ubb.ac.id
